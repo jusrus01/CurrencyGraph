@@ -4,12 +4,116 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CurrencyGraph</title>
+    <title>Currency Graph</title>
 
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    
+    <button id="test">TEST</button>
+    <div class="header">
+        <h1>Euro to US Dollar Exchange Rate Chart</h1>
+        <p>Currencyscoop Historical Currency Exchange Rates Chart</p>
+    </div>
+
+    <div class="container">
+        <div class="chart__container">
+            <div class="grid chart__controls">
+                <h5 class="from-label">From</h5>
+                <div class="dropdown from">
+                    <input id="fromInput" />
+                    <div id="fromDropdownContent" class="dropdown__content">
+                        <option>USD</option>
+                        <option>JPY</option>
+                        <option>BGN</option>
+                        <option>CZK</option>
+                        <option>DKK</option>
+                        <option>GBP</option>
+                        <option>HUF</option>
+                        <option>PLN</option>
+                        <option>RON</option>
+                        <option>SEK</option>
+                        <option>CHF</option>
+                        <option>ISK</option>
+                        <option>NOK</option>
+                        <option>HRK</option>
+                        <option>RUB</option>
+                        <option>TRY</option>
+                        <option>AUD</option>
+                        <option>BRL</option>
+                        <option>CAD</option>
+                        <option>CNY</option>
+                        <option>HKD</option>
+                        <option>IDR</option>
+                        <option>ILS</option>
+                        <option>INR</option>
+                        <option>KRW</option>
+                        <option>MXN</option>
+                        <option>MYR</option>
+                        <option>NZD</option>
+                        <option>PHP</option>
+                        <option>SGD</option>
+                        <option>THB</option>
+                        <option>ZAR</option>
+                    </div>
+                </div>
+                <button class="switch-btn" id="switchBtn">Switch</button>
+                <h5 class="to-label">To</h5>
+                <div class="dropdown to">
+                    <input id="toInput" />
+                    <div id="toDropdownContent" class="dropdown__content">
+                        <option>USD</option>
+                        <option>JPY</option>
+                        <option>BGN</option>
+                        <option>CZK</option>
+                        <option>DKK</option>
+                        <option>GBP</option>
+                        <option>HUF</option>
+                        <option>PLN</option>
+                        <option>RON</option>
+                        <option>SEK</option>
+                        <option>CHF</option>
+                        <option>ISK</option>
+                        <option>NOK</option>
+                        <option>HRK</option>
+                        <option>RUB</option>
+                        <option>TRY</option>
+                        <option>AUD</option>
+                        <option>BRL</option>
+                        <option>CAD</option>
+                        <option>CNY</option>
+                        <option>HKD</option>
+                        <option>IDR</option>
+                        <option>ILS</option>
+                        <option>INR</option>
+                        <option>KRW</option>
+                        <option>MXN</option>
+                        <option>MYR</option>
+                        <option>NZD</option>
+                        <option>PHP</option>
+                        <option>SGD</option>
+                        <option>THB</option>
+                        <option>ZAR</option>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart__info">
+                <div>
+                    <h3>EUR to USD Chart</h3>
+                </div>
+
+                <div>
+                    <h3>1 EUR = 1.17282 USD Aug 12, 2021, 14:53 UTC</h3>
+                </div>
+            </div>
+
+            <div class="chart">
+
+            </div>
+        </div>
+
+    </div>
+
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
