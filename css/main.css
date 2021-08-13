@@ -1,0 +1,143 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --clr-gray: gray;
+    --clr-orange: orange;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--clr-gray);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+input {
+    width: 100%;
+    height: 50px;
+}
+
+h1, p {
+    margin: 0;
+}
+
+.header {
+    background-color: var(--clr-orange);
+    color: white;
+    text-align: center;
+}
+
+.header h1 {
+    padding: 2rem 0;
+}
+
+.header p {
+    padding-bottom: 2rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 0.1fr 1fr;
+    grid-template-rows: auto;
+}
+
+.from {
+    grid-column-start: 1;
+    grid-row-start: 2;
+}
+
+.from-label {
+    grid-column-start: 1;
+    justify-self: start;
+        
+}
+
+.to-label {
+    grid-column-start: 3;
+    justify-self: start;
+}
+
+.to {
+    grid-column-start: 3;
+    grid-row-start: 2;
+}
+
+.switch-btn {
+    border-radius: 50px;
+    border: 0;
+    height: 50px;
+    width: 50px;
+    
+    grid-column-start: 2;
+    grid-row-start: 2;
+
+    cursor: pointer;
+}
+
+.switch-btn:hover {
+    background-color: gray;
+}
+
+.w {
+    display: block;
+    background-color: yellow;
+    width: 50px;
+    height: 50px;
+}
+
+.container {
+    background-color: greenyellow;
+    text-align: center;
+    margin: auto;
+    padding: 0 5rem;
+    max-width: 90rem;
+}
+
+.chart__controls {
+    position: relative;
+    padding-top: 2rem;
+}
+
+.chart__info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chart {
+    margin: 0 auto 0 auto;
+    background-color: red;
+    width: 100%;
+    height: 300px;
+}
+
+.dropdown__content {
+    display: none;
+    width: 100%;
+    max-height: 12.5rem;
+    overflow-y: scroll;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown__content option {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    width: 100%;
+    background-color: white;
+    text-align: left;
+    padding-left: 0.5rem;
+}
+
+.dropdown__content option:hover {
+    background-color: gray;
+}
+
+.dropdown-active {
+    display: block;
+    position: absolute;
+}
