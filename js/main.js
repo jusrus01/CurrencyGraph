@@ -1,171 +1,284 @@
 import { CurrencyService } from "./currencyService.js";
 
-const currencyService = new CurrencyService();
-const button = document.getElementById("test");
+class Input {
+    constructor(inputField, dropdown, dropdownContent) {
+        this.inputField = inputField;
+        this.dropdown = dropdown;
+        this.dropdownContent = dropdownContent;
 
-const fromOptions = document.getElementById("fromDropdownContent");
-const toOptions = document.getElementById("toDropdownContent");
-let showingDropdown = null;
-
-const inputs = [
-    document.getElementById("fromInput"),
-    document.getElementById("toInput")
-]
-
-const switchBtn = document.getElementById("switchBtn");
-
-const dropdowns = document.querySelectorAll(".dropdown");
-// adding events to dropdown containers in order
-// to be able to close them if user didn't choose anything
-dropdowns.forEach(drop => drop.addEventListener('mouseleave', function() { 
-    hideOptions(showingDropdown);
-
-    // not sure if this is fine
-    if(drop.classList.contains('from')) {
-        removeSearchListener(inputs[0]);
-    } else if(drop.classList.contains('to')) {
-        removeSearchListener(inputs[1]);
+        this.addSelectionEventToOptions();
+        this.addInputFieldFocusListener();
+        this.initInputSearch();
     }
 
-}));
+    initInputSearch() {
 
+    }
 
-// set default input values
-// and send GET request
-// NOTE: make GET request a button for now
-// so we don't keep sending these requests
-// for no reason
-inputs[0].value = "EUR";
-inputs[1].value = "USD";
+    addInputFieldFocusListener() {
+        this.inputField.addEventListener("focus", this.showDropdown);
 
-switchBtn.addEventListener('click', function() {
-    const temp = inputs[0].value;
-    inputs[0].value = inputs[1].value;
-    inputs[1].value = temp;
+        this.inputField.addEventListener("blur", () => {
+            
+            // check if selected/not selected value is valid
+            let valid = false;
+
+            this.dropdownContent.childNodes.forEach(node => {
+                if(node.innerText == this.inputField.value) {
+                    valid = true;
+                }
+            });
+
+            // set default value
+            // NOTE: or set previous
+            if(!valid) {
+                // TEMPORARY
+                this.inputField.value = "EUR";
+            }
+
+            this.hideDropdown();
+        });
+    }
+
+    addSelectionEventToOptions() {
+        this.dropdownContent.childNodes.forEach(opt => opt.addEventListener('mousedown', () => {
+            this.setInput(opt.innerText);
+        }));
+    }
+
+    setInput = (value) => {
+        this.inputField.value = value;
+    }
+
+    getInput = () => {
+        return this.inputField.value;
+    }
+
+    showDropdown = () => {
+
+        if(this.dropdownContent == null) {
+            console.error("Failed to find dropdown menu on");
+            return;
+        }
+
+        if(!this.dropdownContent.classList.contains("dropdown-active")) {
+            this.dropdownContent.classList.add("dropdown-active");
+        }
+    }
+
+    hideDropdown = () => {
+
+        if(this.dropdownContent == null) {
+            console.error("Failed to find dropdown menu on ", id);
+            return;
+        }
+
+        if(this.dropdownContent.classList.contains("dropdown-active")) {
+            this.dropdownContent.classList.remove("dropdown-active");
+        }
+    }
+}
+
+const switchBtn = document.getElementById("switchBtn"); 
+
+const inputs = {
+    from: new Input(
+        document.getElementById("fromInput"),
+        document.querySelector(".dropdown.from"),
+        document.getElementById("fromDropdownContent")
+        ),
+
+    to: new Input(
+        document.getElementById("toInput"), 
+        document.querySelector(".dropdown.to"), 
+        document.getElementById("toDropdownContent")
+        )
+}
+
+console.log(inputs);
+
+// init default values on page load
+inputs.from.setInput("EUR");
+inputs.to.setInput("USD");
+
+switchBtn.addEventListener("click", function() {
+
+    const temp = inputs.from.getInput();
+    inputs.from.setInput(inputs.to.getInput());
+    inputs.to.setInput(temp);
+
 });
 
-button.addEventListener("click", function() {
-    let xhr = currencyService.getTimeseries("GBP", "2001-02-21");
-    xhr.onload = function() {
-        if(xhr.readyState == 4 && xhr.status == 200) {
-            console.log(xhr.responseText);
-        }
-    }
-});
 
-inputs.forEach(input => input.addEventListener('focus', (event) => { 
-    showOptions(event);
-    addSearchListener(event); 
-}));
 
-function showOptions(currentInput) {
+// import { CurrencyService } from "./currencyService.js";
 
-    let id = currentInput.target.id;
-    let dropdown = null;
+// const currencyService = new CurrencyService();
+// const button = document.getElementById("test");
 
-    if(id == "fromInput") {
-        dropdown = fromOptions;
-    } else {
-        dropdown = toOptions;
-    }
+// const fromOptions = document.getElementById("fromDropdownContent");
+// const toOptions = document.getElementById("toDropdownContent");
+// let showingDropdown = null;
 
-    if(dropdown == null) {
-        console.error("Failed to find dropdown menu on ", id);
-        return;
-    }
+// const inputs = [
+//     document.getElementById("fromInput"),
+//     document.getElementById("toInput")
+// ]
 
-    if(!dropdown.classList.contains("dropdown-active")) {
-        dropdown.classList.add("dropdown-active");
-    }
+// const switchBtn = document.getElementById("switchBtn");
 
-    // add event listeners to selections
-    dropdown.childNodes.forEach(node => node.addEventListener('click', function() { 
-        setInputValue(currentInput.target, node);
-        hideOptions(currentInput);
-    }));
+// const dropdowns = document.querySelectorAll(".dropdown");
+// // adding events to dropdown containers in order
+// // to be able to close them if user didn't choose anything
+// dropdowns.forEach(drop => drop.addEventListener('mouseleave', function() { 
+//     hideOptions(showingDropdown);
 
-    showingDropdown = currentInput;
-}
+//     // not sure if this is fine
+//     if(drop.classList.contains('from')) {
+//         removeSearchListener(inputs[0]);
+//     } else if(drop.classList.contains('to')) {
+//         removeSearchListener(inputs[1]);
+//     }
 
-function hideOptions(currentInput) {
+// }));
 
-    if(currentInput == null) {
-        return;
-    }
 
-    let id = currentInput.target.id;
-    let dropdown = null;
+// // set default input values
+// // and send GET request
+// // NOTE: make GET request a button for now
+// // so we don't keep sending these requests
+// // for no reason
+// inputs[0].value = "EUR";
+// inputs[1].value = "USD";
 
-    if(id == "fromInput") {
-        dropdown = fromOptions;
-    } else {
-        dropdown = toOptions;
-    }
+// switchBtn.addEventListener('click', function() {
+//     const temp = inputs[0].value;
+//     inputs[0].value = inputs[1].value;
+//     inputs[1].value = temp;
+// });
 
-    if(dropdown == null) {
-        console.error("Failed to find dropdown menu on ", id);
-        return;
-    }
+// button.addEventListener("click", function() {
+//     let xhr = currencyService.getTimeseries("GBP", "2001-02-21");
+//     xhr.onload = function() {
+//         if(xhr.readyState == 4 && xhr.status == 200) {
+//             console.log(xhr.responseText);
+//         }
+//     }
+// });
 
-    if(dropdown.classList.contains("dropdown-active")) {
-        dropdown.classList.remove("dropdown-active");
-    }
+// inputs.forEach(input => input.addEventListener('focus', (event) => { 
+//     showOptions(event);
+//     addSearchListener(event); 
+// }));
 
-    // remove event listeners
-    dropdown.childNodes.forEach(node => node.removeEventListener('click', null));
-    currentInput.target.removeEventListener("keydown", function() {
-        console.log("hideOptions: remoev input listener");
-    });
-    showingDropdown = null;
-}
+// function showOptions(currentInput) {
 
-function setInputValue(input, opt) {
-    input.value = opt.innerText;
-}
+//     let id = currentInput.target.id;
+//     let dropdown = null;
 
-function addSearchListener(event) {
+//     if(id == "fromInput") {
+//         dropdown = fromOptions;
+//     } else {
+//         dropdown = toOptions;
+//     }
 
-    let id = event.target.id;
-    let inputField = event.target;
+//     if(dropdown == null) {
+//         console.error("Failed to find dropdown menu on ", id);
+//         return;
+//     }
 
-    let dropdown = null;
+//     if(!dropdown.classList.contains("dropdown-active")) {
+//         dropdown.classList.add("dropdown-active");
+//     }
 
-    if(id == "fromInput") {
-        dropdown = fromOptions;
-    } else {
-        dropdown = toOptions;
-    }
+//     // add event listeners to selections
+//     dropdown.childNodes.forEach(node => node.addEventListener('click', function() { 
+//         setInputValue(currentInput.target, node);
+//         hideOptions(currentInput);
+//     }));
 
-    let searchWord = '';
+//     showingDropdown = currentInput;
+// }
 
-    inputField.addEventListener('keydown', function(e) {
+// function hideOptions(currentInput) {
 
-        if(showingDropdown == null) {
-            showOptions(event);
-        }
+//     if(currentInput == null) {
+//         return;
+//     }
 
-        if(e.key == "Backspace" && searchWord != '') {
-            searchWord = searchWord.slice(0, -1);
-        } else {
-            searchWord += e.key;
-        }
+//     let id = currentInput.target.id;
+//     let dropdown = null;
 
-        console.log(searchWord);
-        // if enter pressed
+//     if(id == "fromInput") {
+//         dropdown = fromOptions;
+//     } else {
+//         dropdown = toOptions;
+//     }
 
-        // find most appropriate keyword/take the first one/default ones
+//     if(dropdown == null) {
+//         console.error("Failed to find dropdown menu on ", id);
+//         return;
+//     }
 
-        // remove listener
-        if(e.key == "Enter") {
-            removeSearchListener(inputField);
-            console.log("removed?");
-        }
-    });
-}
+//     if(dropdown.classList.contains("dropdown-active")) {
+//         dropdown.classList.remove("dropdown-active");
+//     }
 
-function removeSearchListener(inputField) {
+//     // remove event listeners
+//     dropdown.childNodes.forEach(node => node.removeEventListener('click', null));
+//     currentInput.target.removeEventListener("keydown", function() {
+//         console.log("hideOptions: remoev input listener");
+//     });
+//     showingDropdown = null;
+// }
 
-    inputField.removeEventListener('keydown', function() {
-        console.log("removed listener");
-    });
-}
+// function setInputValue(input, opt) {
+//     input.value = opt.innerText;
+// }
+
+// function addSearchListener(event) {
+
+//     let id = event.target.id;
+//     let inputField = event.target;
+
+//     let dropdown = null;
+
+//     if(id == "fromInput") {
+//         dropdown = fromOptions;
+//     } else {
+//         dropdown = toOptions;
+//     }
+
+//     let searchWord = '';
+
+//     inputField.addEventListener('keydown', function(e) {
+
+//         if(showingDropdown == null) {
+//             showOptions(event);
+//         }
+
+//         if(e.key == "Backspace" && searchWord != '') {
+//             searchWord = searchWord.slice(0, -1);
+//         } else {
+//             searchWord += e.key;
+//         }
+
+//         console.log(searchWord);
+//         // if enter pressed
+
+//         // find most appropriate keyword/take the first one/default ones
+
+//         // remove listener
+//         if(e.key == "Enter") {
+//             removeSearchListener(inputField);
+//             console.log("removed?");
+//         }
+//     });
+// }
+
+// function removeSearchListener(inputField) {
+
+//     inputField.removeEventListener('keydown', function() {
+//         console.log("removed listener");
+//     });
+// }
