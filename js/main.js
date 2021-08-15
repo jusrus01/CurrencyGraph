@@ -5,7 +5,7 @@ const button = document.getElementById("test");
 
 const fromOptions = document.getElementById("fromDropdownContent");
 const toOptions = document.getElementById("toDropdownContent");
-let showing = false;
+let showingDropdown = null;
 
 const inputs = [
     document.getElementById("fromInput"),
@@ -14,8 +14,19 @@ const inputs = [
 
 const switchBtn = document.getElementById("switchBtn");
 
+const dropdowns = document.querySelectorAll(".dropdown");
+// adding events to dropdown containers in order
+// to be able to close them if user didn't choose anything
+dropdowns.forEach(drop => drop.addEventListener('mouseleave', function() { 
+    hideOptions(showingDropdown); 
+}));
+
+
 // set default input values
 // and send GET request
+// NOTE: make GET request a button for now
+// so we don't keep sending these requests
+// for no reason
 inputs[0].value = "EUR";
 inputs[1].value = "USD";
 
@@ -59,15 +70,17 @@ function showOptions(currentInput) {
     // add event listeners to selections
     dropdown.childNodes.forEach(node => node.addEventListener('click', function() { 
         setInputValue(currentInput.target, node);
-        // NOTE: need to listen for window clicks
-        // in order to stop listening to stuff
         hideOptions(currentInput);
     }));
 
-    showing = true;
+    showingDropdown = currentInput;
 }
 
 function hideOptions(currentInput) {
+
+    if(currentInput == null) {
+        return;
+    }
 
     let id = currentInput.target.id;
     let dropdown = null;
@@ -89,7 +102,7 @@ function hideOptions(currentInput) {
 
     // remove event listeners
     dropdown.childNodes.forEach(node => node.removeEventListener('click', null));
-    showing = false;
+    showingDropdown = null;
 }
 
 function setInputValue(input, opt) {
