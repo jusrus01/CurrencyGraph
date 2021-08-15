@@ -1,4 +1,5 @@
 import { CurrencyService } from "./currencyService.js";
+import { containsGivenLetters } from "./utils.js"
 
 class Input {
     constructor(inputField, dropdown, dropdownContent) {
@@ -13,6 +14,39 @@ class Input {
 
     initInputSearch() {
 
+        let searchWord = this.inputField.value;
+
+        this.inputField.addEventListener("keydown", (e) => {
+
+            if(e.key == "Enter") {
+
+                // remove added hidden flags to each item in the container
+                this.dropdownContent.childNodes.forEach(node => {
+                    this.stopHidingOption(node);
+                });
+
+                // searchWord = '';
+                this.hideDropdown();
+
+            } else {
+                if(e.key == "Backspace" && searchWord != '') {
+                    searchWord = searchWord.slice(0, -1);
+                } else if(e.keyCode >= 65 && e.keyCode <= 122) {
+                    searchWord += e.key;
+                }
+                
+                // filter selections by search word
+                this.dropdownContent.childNodes.forEach(node => {
+                    if(node.value !== undefined && !containsGivenLetters(searchWord, node.value)) {
+                        // add hidden flag
+                        this.hideOption(node);
+                    } else if(node.value !== undefined) {
+                        // remove hidden flag if was hidden before
+                        this.stopHidingOption(node);
+                    }
+                });
+            }
+        });
     }
 
     addInputFieldFocusListener() {
@@ -75,6 +109,18 @@ class Input {
 
         if(this.dropdownContent.classList.contains("dropdown-active")) {
             this.dropdownContent.classList.remove("dropdown-active");
+        }
+    }
+
+    hideOption = (option) => {
+        if(!option.classList.contains("hide")) {
+            option.classList.add("hide");
+        }
+    }
+
+    stopHidingOption = (option) => {
+        if(option.classList.contains("hide")) {
+            option.classList.remove("hide");
         }
     }
 }
