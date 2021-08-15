@@ -18,7 +18,15 @@ const dropdowns = document.querySelectorAll(".dropdown");
 // adding events to dropdown containers in order
 // to be able to close them if user didn't choose anything
 dropdowns.forEach(drop => drop.addEventListener('mouseleave', function() { 
-    hideOptions(showingDropdown); 
+    hideOptions(showingDropdown);
+
+    // not sure if this is fine
+    if(drop.classList.contains('from')) {
+        removeSearchListener(inputs[0]);
+    } else if(drop.classList.contains('to')) {
+        removeSearchListener(inputs[1]);
+    }
+
 }));
 
 
@@ -45,7 +53,10 @@ button.addEventListener("click", function() {
     }
 });
 
-inputs.forEach(input => input.addEventListener('focus', (event) => showOptions(event)));
+inputs.forEach(input => input.addEventListener('focus', (event) => { 
+    showOptions(event);
+    addSearchListener(event); 
+}));
 
 function showOptions(currentInput) {
 
@@ -102,9 +113,59 @@ function hideOptions(currentInput) {
 
     // remove event listeners
     dropdown.childNodes.forEach(node => node.removeEventListener('click', null));
+    currentInput.target.removeEventListener("keydown", function() {
+        console.log("hideOptions: remoev input listener");
+    });
     showingDropdown = null;
 }
 
 function setInputValue(input, opt) {
     input.value = opt.innerText;
+}
+
+function addSearchListener(event) {
+
+    let id = event.target.id;
+    let inputField = event.target;
+
+    let dropdown = null;
+
+    if(id == "fromInput") {
+        dropdown = fromOptions;
+    } else {
+        dropdown = toOptions;
+    }
+
+    let searchWord = '';
+
+    inputField.addEventListener('keydown', function(e) {
+
+        if(showingDropdown == null) {
+            showOptions(event);
+        }
+
+        if(e.key == "Backspace" && searchWord != '') {
+            searchWord = searchWord.slice(0, -1);
+        } else {
+            searchWord += e.key;
+        }
+
+        console.log(searchWord);
+        // if enter pressed
+
+        // find most appropriate keyword/take the first one/default ones
+
+        // remove listener
+        if(e.key == "Enter") {
+            removeSearchListener(inputField);
+            console.log("removed?");
+        }
+    });
+}
+
+function removeSearchListener(inputField) {
+
+    inputField.removeEventListener('keydown', function() {
+        console.log("removed listener");
+    });
 }

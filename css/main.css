@@ -141,3 +141,7 @@ h1, p {
     display: block;
     position: absolute;
 }
+
+.hide {
+    display: none;
+}
