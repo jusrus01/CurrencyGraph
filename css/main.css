@@ -145,3 +145,8 @@ h1, p {
 .hide {
     display: none;
 }
+
+canvas {
+    width: 100%;
+    height: 100%;
+}

@@ -1,5 +1,6 @@
 import { CurrencyService } from "./currencyService.js";
 import { containsGivenLetters } from "./utils.js"
+import { Graph } from "./graph.js";
 
 class Input {
     constructor(inputField, dropdown, dropdownContent) {
@@ -125,6 +126,8 @@ class Input {
     }
 }
 
+const graph = new Graph();
+
 const switchBtn = document.getElementById("switchBtn"); 
 
 const inputs = {
@@ -155,9 +158,10 @@ switchBtn.addEventListener("click", function() {
 
 });
 
-
-
-// import { CurrencyService } from "./currencyService.js";
+graph.renderData(
+    ["2021-01-02", "2021-01-03", "2021-01-04", "2021-01-05"],
+    [1, 2, 0.5, 3]
+    );
 
 // const currencyService = new CurrencyService();
 // const button = document.getElementById("test");
