@@ -10,3 +10,19 @@ export function containsGivenLetters(letters, word) {
     }
     return true;
 }
+
+export function formatDate(date) {
+
+    let month = date.getMonth();
+    let day = date.getDay();
+
+    if(month < 10) {
+        month = `0${month}`;
+    }
+    
+    if(day < 10) {
+        day = `0${day}`;
+    }
+
+    return `${date.getFullYear()}-${month}-${day}`;
+}
