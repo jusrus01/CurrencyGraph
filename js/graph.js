@@ -9,104 +9,138 @@ export class Graph {
 
         this.padding = 50;
 
-        this.xAxisData = null;
+        this.labels = null;
         this.data = null;
 
         window.onresize = () => {
-            if(this.data != null && this.data != null) {
+            if(this.data != null && this.labels != null) {
                 this.canvas.width = this.canvas.clientWidth;
                 this.canvas.height = this.canvas.clientHeight;
 
-                this.renderData(this.xAxisData, this.data);
+                this.drawClient(this.data, this.labels);
             }
         }
     }
 
-    drawBackground() {
-        // NOTE: make sure this doesn't cause memory leak
-        this.ctx.fillStyle = "gray";
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    fillRect(rect, color) {
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
     }
 
-    renderData = (xAxisData, data) => {
-
-        this.xAxisData = xAxisData;
+    drawClient(data, labels) {
+        // save given values
+        // because on screen resize
+        // we will use them to redraw entire client
         this.data = data;
+        this.labels = labels;
 
-        // clear data
-        this.drawBackground();
+        // draw background
+        this.fillRect({ x: 0, y: 0, w: this.canvas.width, h: this.canvas.height }, "gray");
 
-        // temporary padding background
-        this.ctx.fillStyle = "white";
-        this.ctx.fillRect(this.padding, this.padding, this.canvas.width - this.padding * 2, this.canvas.height - this.padding * 2);
-
-        // constructX axis
-        let stepX = (this.canvas.width - this.padding) / (xAxisData.length - 1);
-        // constructY axis
+        // apply padding to all values
+        let startX = this.padding;
+        let startY = this.padding;
+        let graphWidth = this.canvas.width - this.padding * 2;
+        let graphHeight = this.canvas.height - this.padding * 2;
+        let stepX = parseInt(graphWidth / (labels.length - 1));
+        let stepY = graphHeight / 4;
         
-        // find highest value
-        // NOTE: implement search algorithm
-        let max = 3;
-        // let min = 0.5;
-        // let stepY = this.canvas.height / ((max - min) / 2); 
-        // console.log(stepY);
-
-        // draw grid
-        this.drawGrid(stepX, xAxisData.length, this.padding);
-        // draw labels
-
-        // set points
-
-
-        // draw lines
-        this.drawLines(stepX, xAxisData.length, data, max, this.padding);
-    }
-
-    drawLines(stepX, countX, data, max, padding)
-    {
-        this.ctx.beginPath();
-
-        stepX -= padding;
-
-        for(let x = 1; x < countX; x++) {
-
-            this.ctx.moveTo(parseInt((x - 1) * stepX) + padding, this.canvas.height - data[x - 1] * ((this.canvas.height - padding) / max));
-            this.ctx.lineTo(parseInt(x * stepX) + padding, this.canvas.height - data[x] * ((this.canvas.height - padding) / max));
-            console.log(data[x-1]);
-            console.log(data[x]);
-            console.log("next");
-            // console.log("hello");
-            // console.log(parseInt(x * stepX), " ", data[x - 1]);
-            // console.log(parseInt(x * stepX), " ", data[x])
+        // can't be less than one pixel
+        if(stepX < 1) {
+            stepX = 1;
         }
 
-        this.ctx.lineWidth = 2;
-        this.ctx.strokeStyle = "red";
+        let maxY = Math.max(...this.data);
+        let minY = Math.min(...this.data);
+
+        let diff = maxY - minY;
+
+        maxY -= minY;
+
+        
+        // draw graph backgroud
+        this.fillRect({ x: startX, y: startY, w: graphWidth, h: graphHeight }, "white");
+
+        this.drawGrid(startX, startY, graphWidth, graphHeight, stepX, stepY, labels.length - 1);
+        this.drawLabels(labels, startX, stepX, stepY, minY, diff, graphHeight);
+        this.drawGraph(data, startX, startY, maxY, minY, labels.length, stepX, graphHeight);
+    }
+
+    drawLabels(labels, startX, stepX, stepY, minY, diff, graphHeight, color = "white") {
+
+        let step = Math.round(labels.length / 6);
+        this.ctx.fillStyle = color;
+        this.ctx.font = "12px serif";
+
+        let metrics;
+        let x = startX;
+
+        for(let i = 0; i < labels.length; i++) {
+
+            if((i !== 0 && i % step == 0) || i == 0) {
+                metrics = this.ctx.measureText(labels[i]);
+                this.ctx.fillText(labels[i], startX - metrics.width / 2, this.canvas.height);
+            }
+
+            startX += stepX;
+        }
+
+        let startY = this.padding + graphHeight;
+        let add = 0;
+
+        for(let i = 0; i < 5; i++) {
+
+            this.ctx.fillText((minY + add).toFixed(2), 0, startY + 6);
+ 
+            add = (i + 2) * diff / 5;
+
+            startY -= stepY;
+        }
+    }
+
+    drawGrid(x, y, width, height, stepX, stepY, count, color = "green") {
+        
+        this.ctx.beginPath();
+
+        let startX = x;
+
+        for(let i = 0; i < count + 1; i++) {
+            // this.ctx.moveTo(startX, y);
+            // this.ctx.lineTo(startX, height + this.padding);
+
+            startX += stepX;
+        }
+
+        let startY = this.padding;
+
+        for(let i = 0; i < count + 1; i++) {
+
+            this.ctx.moveTo(x, startY);
+            this.ctx.lineTo(width + this.padding, startY);
+
+            startY += stepY;
+        }
+
+        this.ctx.strokeStyle = color;
         this.ctx.stroke();
     }
 
-    drawGrid(stepX, countX, padding) {
-
-        this.ctx.beginPath();
+    drawGraph(data, startX, startY, maxY, minY, count, stepX, height, color = "blue") {
         
-        stepX -= padding;
+        this.ctx.beginPath();
 
-        for(let x = 0; x < countX + 1; x++) {
-            this.ctx.moveTo(parseInt(x * stepX + padding), padding);
-            this.ctx.lineTo(parseInt(x * stepX + padding), this.canvas.height - padding);
+        for(let i = 1; i < count; i++) {
+
+            let y1 = height - Math.round((this.data[i - 1] - minY) * height / maxY) + this.padding;
+            let y2 = height - Math.round((this.data[i] - minY) * height / maxY) + this.padding;
+
+            this.ctx.moveTo(startX, y1);
+            this.ctx.lineTo(startX + stepX, y2);
+
+            startX += stepX;
         }
 
-        // for(let y = 0; y < stepY; y++) {
-        //     this.ctx.moveTo(0, y * stepY);
-        //     this.ctx.lineTo(this.canvas.width, y * stepY);
-        // }
-
-        this.ctx.lineWidth = 1;
-        this.ctx.strokeStyle = "green";
+        this.ctx.strokeStyle = color;
         this.ctx.stroke();
-
-        // this.ctx.moveTo(20, 0);
-        // this.ctx.lineTo(20, this.canvas.clientHeight);
-        // this.ctx.stroke();
     }
 }
