@@ -1,6 +1,9 @@
-import { containsGivenLetters } from "./utils.js"
+import { containsGivenLetters, formatDate } from "./utils.js"
 import { Graph } from "./graph.js";
 import { CurrencyService } from "./currencyService.js";
+
+
+console.log(formatDate(new Date()));
 
 class Input {
     constructor(inputField, dropdown, dropdownContent) {
@@ -158,32 +161,44 @@ switchBtn.addEventListener("click", function() {
 
 });
 
-// TEMPORARY
 const currencyService = new CurrencyService();
 
-document.getElementById("test").addEventListener("click", function() {
-    let xhr = currencyService.getTimeseries("GBP", "2015-02-21");
-    xhr.onreadystatechange = function() {
-        if(xhr.readyState == 4 && xhr.status == 200) {
-            let temp = xhr.responseText;
-            let json = JSON.parse(temp);
+const dateButtons = document.querySelectorAll(".date-btn");
 
-            let data = [];
-            let labels = [];
-            let obj = json["rates"];
-            
-            let counter = 0;
+const currentDate = new Date();
 
-            for(const [key, value] of Object.entries(obj)) {
-                labels.push(key);
-                data.push(value["EUR"]);
-            }
-            // console.log(data);
-            graph.drawClient(data, labels);
-        }
-    }
-});
+const allDates = [
+    new Date(currentDate.getTime() - 4.32e+7),
+    new Date(currentDate.getTime() - 8.64e+7),
+    new Date(currentDate.getTime() - 6.048e+8),
+    new Date(currentDate.getTime() - 2.628e+9),
+    new Date(currentDate.getTime() - 3.154e+10),
+    new Date(currentDate.getTime() - 6.307e+10),
+    new Date(currentDate.getTime() - 1.577e+11),
+    new Date(currentDate.getTime() - 3.154e+11),
+];
 
+for(let i = 0; i < allDates.length; i++) {
+    dateButtons[i].addEventListener("click", function() {
+       let xhr = currencyService.getTimeseries("GBP", formatDate(allDates[i]));
+       
+       xhr.onreadystatechange = function() {
+           if(xhr.status == 200 && xhr.readyState == 4) {
+               
+                let jsonCurrencyData = JSON.parse(xhr.responseText);
+                let currencyData = [];
+                let labels = [];
+
+                for(const [key, value] of Object.entries(jsonCurrencyData["rates"])) {
+                    labels.push(key);
+                    currencyData.push(value["EUR"]);
+                }
+
+                graph.drawClient(currencyData, labels);
+           }
+       }
+    });
+}
 
 graph.drawClient(
     [1, 2, 0, 3, 5, 0.2],
