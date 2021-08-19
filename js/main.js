@@ -2,9 +2,6 @@ import { containsGivenLetters, formatDate } from "./utils.js"
 import { Graph } from "./graph.js";
 import { CurrencyService } from "./currencyService.js";
 
-
-console.log(formatDate(new Date()));
-
 class Input {
     constructor(inputField, dropdown, dropdownContent) {
         this.inputField = inputField;
@@ -81,6 +78,9 @@ class Input {
     addSelectionEventToOptions() {
         this.dropdownContent.childNodes.forEach(opt => opt.addEventListener('mousedown', () => {
             this.setInput(opt.innerText);
+
+            // NOTE: add a check to see if it was already selected
+            updateGraphData(currentSelectedDate);
         }));
     }
 
@@ -147,8 +147,6 @@ const inputs = {
         )
 }
 
-console.log(inputs);
-
 // init default values on page load
 inputs.from.setInput("EUR");
 inputs.to.setInput("USD");
@@ -159,6 +157,8 @@ switchBtn.addEventListener("click", function() {
     inputs.from.setInput(inputs.to.getInput());
     inputs.to.setInput(temp);
 
+
+    updateGraphData(currentSelectedDate);
 });
 
 const currencyService = new CurrencyService();
@@ -178,29 +178,38 @@ const allDates = [
     new Date(currentDate.getTime() - 3.154e+11),
 ];
 
+let currentSelectedDate = allDates[3];
+
 for(let i = 0; i < allDates.length; i++) {
-    dateButtons[i].addEventListener("click", function() {
-       let xhr = currencyService.getTimeseries("GBP", formatDate(allDates[i]));
-       
-       xhr.onreadystatechange = function() {
-           if(xhr.status == 200 && xhr.readyState == 4) {
-               
-                let jsonCurrencyData = JSON.parse(xhr.responseText);
-                let currencyData = [];
-                let labels = [];
-
-                for(const [key, value] of Object.entries(jsonCurrencyData["rates"])) {
-                    labels.push(key);
-                    currencyData.push(value["EUR"]);
-                }
-
-                graph.drawClient(currencyData, labels);
-           }
-       }
+    dateButtons[i].addEventListener("click", function() { 
+        updateGraphData(allDates[i]);
+        currentSelectedDate = allDates[i];
     });
 }
 
-graph.drawClient(
-    [1, 2, 0, 3, 5, 0.2],
-    ["2021-01-02", "2021-01-03", "2021-01-04", "2021-01-05", "1233-32-12", "2131-12-12"]
-);
+// graph.drawClient(
+//     [1, 2, 0, 3, 5, 0.2],
+//     ["2021-01-02", "2021-01-03", "2021-01-04", "2021-01-05", "1233-32-12", "2131-12-12"]
+// );
+
+function updateGraphData(date) {
+    let xhr = currencyService.getTimeseries(inputs.from.getInput(), formatDate(date));
+       
+    xhr.onreadystatechange = function() {
+        if(xhr.status == 200 && xhr.readyState == 4) {
+            
+             let jsonCurrencyData = JSON.parse(xhr.responseText);
+             let currencyData = [];
+             let labels = [];
+
+             for(const [key, value] of Object.entries(jsonCurrencyData["rates"])) {
+                 labels.push(key);
+                 currencyData.push(value[inputs.to.getInput()]);
+             }
+
+             graph.drawClient(currencyData, labels);
+        }
+    }
+}
+
+updateGraphData(currentSelectedDate);
