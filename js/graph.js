@@ -5,21 +5,75 @@ export class Graph {
         this.canvas.width = this.canvas.clientWidth;
         this.canvas.height = this.canvas.clientHeight;
 
+        this.rect = this.canvas.getBoundingClientRect();
+
         this.ctx = this.canvas.getContext("2d");
 
         this.padding = 50;
 
         this.labels = null;
         this.data = null;
+        this.tempStep = 0;
+
+        this.showExtraData = false;
 
         window.onresize = () => {
             if(this.data != null && this.labels != null) {
                 this.canvas.width = this.canvas.clientWidth;
                 this.canvas.height = this.canvas.clientHeight;
+                this.rect = this.canvas.getBoundingClientRect();
 
                 this.drawClient(this.data, this.labels);
             }
         }
+
+        this.canvas.addEventListener("mouseenter", () => { this.showExtraData = true; });
+
+        this.canvas.addEventListener("mouseleave", () => { 
+            this.showExtraData = false;
+            this.drawClient(this.data, this.labels);
+        });
+
+        this.canvas.addEventListener("mousemove", (e) => this.showData(e));
+    }
+
+    showData(e) {
+
+        if(this.showExtraData) {
+
+            let x = e.clientX - this.padding - this.rect.left;
+            let dataIndex = Math.round(x / this.tempStep);
+    
+            if(dataIndex >= 0 && dataIndex < this.data.length) {
+    
+                this.drawClient(this.data, this.labels);
+                this.drawLine(
+                    dataIndex * this.tempStep + this.padding,
+                    this.padding, dataIndex * this.tempStep + this.padding,
+                    this.canvas.height - this.padding,
+                    "black");
+
+                this.drawBox(dataIndex * this.tempStep + this.padding,
+                    0, 100, 50, this.data[dataIndex], "orange");
+            }
+        }
+    }
+
+    drawBox(x, y, width, height, text, color) {
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(x - width / 2, y, width, height);
+        this.ctx.fillStyle = "white";
+        this.ctx.fillText(text, x, height - y);
+    }
+
+    drawLine(x1, y1, x2, y2, color) {
+        this.ctx.beginPath();
+
+        this.ctx.moveTo(x1, y1);
+        this.ctx.lineTo(x2, y2);
+
+        this.ctx.strokeStyle = color;
+        this.ctx.stroke();
     }
 
     fillRect(rect, color) {
@@ -42,8 +96,9 @@ export class Graph {
         let startY = this.padding;
         let graphWidth = this.canvas.width - this.padding * 2;
         let graphHeight = this.canvas.height - this.padding * 2;
-        let stepX = parseInt(graphWidth / (labels.length - 1));
+        let stepX = Math.round(graphWidth / (labels.length - 1));
         let stepY = graphHeight / 4;
+        this.tempStep = stepX;
         
         // can't be less than one pixel
         if(stepX < 1) {
