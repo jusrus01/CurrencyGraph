@@ -8,6 +8,7 @@ export function containsGivenLetters(letters, word) {
             return false;
         }
     }
+    
     return true;
 }
 

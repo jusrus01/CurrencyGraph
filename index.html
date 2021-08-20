@@ -7,6 +7,8 @@
     <title>Currency Graph</title>
 
     <link rel="stylesheet" href="css/main.css">
+
+    <script src="https://kit.fontawesome.com/b115137311.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="header">
@@ -56,7 +58,9 @@
                         <option>ZAR</option>
                     </div>
                 </div>
-                <button class="switch-btn" id="switchBtn">Switch</button>
+                <button class="switch-btn" id="switchBtn">
+                    <i class="fas fa-exchange-alt"></i>
+                </button>
                 <h5 class="to-label">To</h5>
                 <div class="dropdown to">
                     <input id="toInput" />
@@ -110,7 +114,7 @@
 
             <div class="chart__date-selection">
                 <button class="date-btn">1W</button>
-                <button class="date-btn">1M</button>
+                <button class="date-btn selected">1M</button>
                 <button class="date-btn">1Y</button>
                 <button class="date-btn">2Y</button>
                 <button class="date-btn">5Y</button>

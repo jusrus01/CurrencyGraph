@@ -168,8 +168,6 @@ const dateButtons = document.querySelectorAll(".date-btn");
 const currentDate = new Date();
 
 const allDates = [
-    new Date(currentDate.getTime() - 4.32e+7),
-    new Date(currentDate.getTime() - 8.64e+7),
     new Date(currentDate.getTime() - 6.048e+8),
     new Date(currentDate.getTime() - 2.628e+9),
     new Date(currentDate.getTime() - 3.154e+10),
@@ -187,10 +185,10 @@ for(let i = 0; i < allDates.length; i++) {
     });
 }
 
-// graph.drawClient(
-//     [1, 2, 0, 3, 5, 0.2],
-//     ["2021-01-02", "2021-01-03", "2021-01-04", "2021-01-05", "1233-32-12", "2131-12-12"]
-// );
+graph.drawClient(
+    [1, 2, 0, 3, 5, 0.2],
+    ["2021-01-02", "2021-01-03", "2021-01-04", "2021-01-05", "1233-32-12", "2131-12-12"]
+);
 
 function updateGraphData(date) {
     let xhr = currencyService.getTimeseries(inputs.from.getInput(), formatDate(date));
@@ -212,4 +210,4 @@ function updateGraphData(date) {
     }
 }
 
-updateGraphData(currentSelectedDate);
+// updateGraphData(currentSelectedDate);

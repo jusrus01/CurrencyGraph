@@ -13,7 +13,7 @@ export class Graph {
 
         this.labels = null;
         this.data = null;
-        this.tempStep = 0;
+        this.stepX = 0;
 
         this.showExtraData = false;
 
@@ -42,28 +42,28 @@ export class Graph {
         if(this.showExtraData) {
 
             let x = e.clientX - this.padding - this.rect.left;
-            let dataIndex = Math.round(x / this.tempStep);
+            let dataIndex = Math.round(x / this.stepX);
+
+            let y = this.canvas.height - this.padding;
     
             if(dataIndex >= 0 && dataIndex < this.data.length) {
     
                 this.drawClient(this.data, this.labels);
-                this.drawLine(
-                    dataIndex * this.tempStep + this.padding,
-                    this.padding, dataIndex * this.tempStep + this.padding,
-                    this.canvas.height - this.padding,
-                    "black");
 
-                this.drawBox(dataIndex * this.tempStep + this.padding,
-                    0, 100, 50, this.data[dataIndex], "orange");
+                let x = dataIndex * this.stepX + this.padding;
+
+                this.drawLine(x, this.padding, x, y, "black");
+                this.drawBox(x, 0, 100, 50, this.data[dataIndex], this.labels[dataIndex], "white");
             }
         }
     }
 
-    drawBox(x, y, width, height, text, color) {
+    drawBox(x, y, width, height, text, dateText, color) {
         this.ctx.fillStyle = color;
         this.ctx.fillRect(x - width / 2, y, width, height);
-        this.ctx.fillStyle = "white";
-        this.ctx.fillText(text, x, height - y);
+        this.ctx.fillStyle = "black";
+        this.ctx.fillText(text, x, height - 30);
+        this.ctx.fillText(dateText, x, height - 10);
     }
 
     drawLine(x1, y1, x2, y2, color) {
@@ -89,20 +89,19 @@ export class Graph {
         this.labels = labels;
 
         // draw background
-        this.fillRect({ x: 0, y: 0, w: this.canvas.width, h: this.canvas.height }, "gray");
+        this.fillRect({ x: 0, y: 0, w: this.canvas.width, h: this.canvas.height }, "white");
 
         // apply padding to all values
         let startX = this.padding;
         let startY = this.padding;
         let graphWidth = this.canvas.width - this.padding * 2;
         let graphHeight = this.canvas.height - this.padding * 2;
-        let stepX = Math.round(graphWidth / (labels.length - 1));
+        this.stepX = Math.round(graphWidth / (labels.length - 1));
         let stepY = graphHeight / 4;
-        this.tempStep = stepX;
         
         // can't be less than one pixel
-        if(stepX < 1) {
-            stepX = 1;
+        if(this.stepX < 1) {
+            this.stepX = 1;
         }
 
         let maxY = Math.max(...this.data);
@@ -116,12 +115,12 @@ export class Graph {
         // draw graph backgroud
         this.fillRect({ x: startX, y: startY, w: graphWidth, h: graphHeight }, "white");
 
-        this.drawGrid(startX, startY, graphWidth, graphHeight, stepX, stepY, labels.length - 1);
-        this.drawLabels(labels, startX, stepX, stepY, minY, diff, graphHeight);
-        this.drawGraph(data, startX, startY, maxY, minY, labels.length, stepX, graphHeight);
+        this.drawGrid(startX, startY, graphWidth, graphHeight, this.stepX, stepY, labels.length - 1);
+        this.drawLabels(labels, startX, this.stepX, stepY, minY, diff, graphHeight);
+        this.drawGraph(data, startX, startY, maxY, minY, labels.length, this.stepX, graphHeight);
     }
 
-    drawLabels(labels, startX, stepX, stepY, minY, diff, graphHeight, color = "white") {
+    drawLabels(labels, startX, stepX, stepY, minY, diff, graphHeight, color = "black") {
 
         let step = Math.round(labels.length / 6);
         this.ctx.fillStyle = color;
@@ -153,7 +152,7 @@ export class Graph {
         }
     }
 
-    drawGrid(x, y, width, height, stepX, stepY, count, color = "green") {
+    drawGrid(x, y, width, height, stepX, stepY, count, color = "gray") {
         
         this.ctx.beginPath();
 
@@ -168,7 +167,7 @@ export class Graph {
 
         let startY = this.padding;
 
-        for(let i = 0; i < count + 1; i++) {
+        for(let i = 0; i < 5; i++) {
 
             this.ctx.moveTo(x, startY);
             this.ctx.lineTo(width + this.padding, startY);
