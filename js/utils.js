@@ -17,10 +17,20 @@ export function formatDate(date) {
     let day = date.getDay();
 
     if(month < 10) {
+
+        if(month == 0) {
+            month = 1;
+        }
+
         month = `0${month}`;
     }
     
     if(day < 10) {
+
+        if(day == 0) {
+            day = 1;
+        }
+
         day = `0${day}`;
     }
 
