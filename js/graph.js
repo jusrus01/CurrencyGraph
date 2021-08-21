@@ -145,7 +145,7 @@ export class Graph {
 
         let step = Math.round(labels.length / this.labelCount);
         this.ctx.fillStyle = color;
-        this.ctx.font = "12px serif";
+        this.ctx.font = "12px Inter";
 
         let metrics;
         let x = startX;
