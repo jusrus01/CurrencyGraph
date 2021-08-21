@@ -115,7 +115,7 @@ export class Graph {
         // apply padding to all values
         let startX = this.padding;
         let startY = this.padding;
-        let graphWidth = this.canvas.width - this.padding;
+        let graphWidth = this.canvas.width - this.padding * 2;
         let graphHeight = this.canvas.height - this.padding * 2;
         this.stepX = Math.round(graphWidth / (labels.length - 1));
         let stepY = graphHeight / 4;
@@ -191,7 +191,7 @@ export class Graph {
         for(let i = 0; i < 5; i++) {
 
             this.ctx.moveTo(x, startY);
-            this.ctx.lineTo(width + this.padding, startY);
+            this.ctx.lineTo(width + this.padding * 2, startY);
 
             startY += stepY;
         }
