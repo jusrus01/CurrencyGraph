@@ -244,7 +244,7 @@ export class Graph {
         let offset = 0;
 
         for (let i = 0; i < 5; i++) {
-            this.ctx.fillText((minY + add).toFixed(4), 0, startY + 6);
+            this.ctx.fillText((minY + offset).toFixed(4), 0, startY + 6);
 
             offset = ((i + 2) * diff) / 5;
 
