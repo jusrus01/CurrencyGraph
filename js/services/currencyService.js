@@ -4,16 +4,15 @@ export class CurrencyService {
     }
 
     getTimeseries(baseCurrency, date) {
-        
         let xhr = new XMLHttpRequest();
 
         let requestUrl = `${this.apiUrl}/${date}..?from=${baseCurrency}`;
 
         xhr.open("GET", requestUrl, true);
 
-        xhr.onerror = function(e) {
+        xhr.onerror = function (e) {
             console.error(xhr.statusText);
-        }
+        };
 
         xhr.send();
 
