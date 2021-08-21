@@ -14,6 +14,10 @@ class Input {
         this.initInputSearch();
     }
 
+
+    // NOTE: implement ENTER selections
+    // fix errors, because nothing works if we get an error
+    // also touch keyboard event are different?
     initInputSearch() {
 
         let searchWord = this.inputField.value;
@@ -22,15 +26,29 @@ class Input {
 
             if(e.key == "Enter") {
 
+                let selected = false;
+
+                // set input to the first unhidden element and
                 // remove added hidden flags to each item in the container
                 this.dropdownContent.childNodes.forEach(node => {
-                    this.stopHidingOption(node);
+                    if(node.value !== undefined) {
+
+                        if(!selected && !node.classList.contains("hide")) {
+                            this.setInput(node.value);
+                            selected = true;
+                        }
+
+                        this.stopHidingOption(node);
+                    }
                 });
 
                 // searchWord = '';
                 this.hideDropdown();
 
             } else {
+
+                let firstHighlighted = false;
+
                 if(e.key == "Backspace" && searchWord != '') {
                     searchWord = searchWord.slice(0, -1);
                 } else if(e.keyCode >= 65 && e.keyCode <= 122) {
@@ -42,9 +60,20 @@ class Input {
                     if(node.value !== undefined && !containsGivenLetters(searchWord, node.value)) {
                         // add hidden flag
                         this.hideOption(node);
-                    } else if(node.value !== undefined) {
+                    } else if(node.value !== undefined &&
+                        !node.classList.contains("hide") && !firstHighlighted) {
+                        
+                        // set highlight
+                        node.classList.add("highlight");
+                        firstHighlighted = true;
+                    }
+                    else if(node.value !== undefined) {
                         // remove hidden flag if was hidden before
                         this.stopHidingOption(node);
+
+                        if(node.classList.contains("highlight")) {
+                            node.classList.remove("highlight");
+                        }
                     }
                 });
             }
@@ -223,7 +252,7 @@ function updateGraphData(date) {
 
              latestValue.innerHTML = currencyData.pop();
              latestDate.innerHTML = new Date(labels.pop()).toUTCString();
-             
+
              graph.drawClient(currencyData, labels, inputs.to.getInput());
         }
     }

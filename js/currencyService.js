@@ -1,11 +1,13 @@
-import { apiUrl } from "./config.js";
-
 export class CurrencyService {
+    constructor() {
+        this.apiUrl = "https://api.frankfurter.app";
+    }
+
     getTimeseries(baseCurrency, date) {
         
         let xhr = new XMLHttpRequest();
 
-        let requestUrl = `${apiUrl}/${date}..?from=${baseCurrency}`;
+        let requestUrl = `${this.apiUrl}/${date}..?from=${baseCurrency}`;
 
         xhr.open("GET", requestUrl, true);
 

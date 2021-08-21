@@ -52,6 +52,11 @@ h1, p {
     font-weight: bold;
 }
 
+.highlight {
+    color: var(--clr-blue);
+    font-weight: 600;
+}
+
 .date-btn:hover {
     background-color: var(--clr-gray);
     color: white;
