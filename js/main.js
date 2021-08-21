@@ -1,6 +1,6 @@
-import { containsGivenLetters, formatDate } from "./utils.js"
-import { Graph } from "./graph.js";
-import { CurrencyService } from "./currencyService.js";
+import { containsGivenLetters, formatDate } from "./utils/utils.js"
+import { Graph } from "./graph/graph.js";
+import { CurrencyService } from "./services/currencyService.js";
 
 class Input {
     constructor(inputField, dropdown, dropdownContent, labels) {
