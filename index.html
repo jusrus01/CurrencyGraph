@@ -12,14 +12,14 @@
 </head>
 <body>
     <div class="header">
-        <h1>Euro to US Dollar Exchange Rate Chart</h1>
+        <h1><span class="from-label">Euro</span> to <span class="to-label">US</span> Exchange Rate Chart</h1>
         <p>Currencyscoop Historical Currency Exchange Rates Chart</p>
     </div>
 
     <div class="container">
         <div class="chart__container">
             <div class="grid chart__controls">
-                <h5 class="from-label">From</h5>
+                <h5 class="from-label--">From</h5>
                 <div class="dropdown from">
                     <input id="fromInput" />
                     <div id="fromDropdownContent" class="dropdown__content">
@@ -61,7 +61,7 @@
                 <button class="switch-btn" id="switchBtn">
                     <i class="fas fa-exchange-alt"></i>
                 </button>
-                <h5 class="to-label">To</h5>
+                <h5 class="to-label--">To</h5>
                 <div class="dropdown to">
                     <input id="toInput" />
                     <div id="toDropdownContent" class="dropdown__content">
@@ -103,12 +103,12 @@
             </div>
 
             <div class="chart__info">
-                <div>
-                    <h3>EUR to USD Chart</h3>
+                <div class="chart__label">
+                    <h3><span class="from-label">EUR</span> to <span class="to-label">USD</span> Chart</h3>
                 </div>
 
                 <div>
-                    <h3>1 EUR = 1.17282 USD Aug 12, 2021, 14:53 UTC</h3>
+                    <h3>1 <span class="from-label">EUR</span> = <span id="latestValue">1.17282</span> <span class="to-label">USD</span> <span id="latestDate">Aug 12, 2021, 14:53 UTC</span></h3>
                 </div>
             </div>
 

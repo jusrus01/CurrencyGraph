@@ -14,6 +14,9 @@ export class Graph {
         this.labels = null;
         this.data = null;
         this.stepX = 0;
+        this.currency = null;
+
+        this.labelCount = 6;
 
         this.showExtraData = false;
 
@@ -21,9 +24,16 @@ export class Graph {
             if(this.data != null && this.labels != null) {
                 this.canvas.width = this.canvas.clientWidth;
                 this.canvas.height = this.canvas.clientHeight;
+
+                if(this.canvas.width < 550) {
+                    this.labelCount = 3;
+                } else {
+                    this.labelCount = 6;
+                }
+
                 this.rect = this.canvas.getBoundingClientRect();
 
-                this.drawClient(this.data, this.labels);
+                this.drawClient(this.data, this.labels, this.currency);
             }
         }
 
@@ -31,7 +41,7 @@ export class Graph {
 
         this.canvas.addEventListener("mouseleave", () => { 
             this.showExtraData = false;
-            this.drawClient(this.data, this.labels);
+            this.drawClient(this.data, this.labels, this.currency);
         });
 
         this.canvas.addEventListener("mousemove", (e) => this.showData(e));
@@ -42,25 +52,35 @@ export class Graph {
         if(this.showExtraData) {
 
             let x = e.clientX - this.padding - this.rect.left;
+            let y = this.canvas.height - this.padding;
+
             let dataIndex = Math.round(x / this.stepX);
 
-            let y = this.canvas.height - this.padding;
-    
             if(dataIndex >= 0 && dataIndex < this.data.length) {
     
-                this.drawClient(this.data, this.labels);
+                this.drawClient(this.data, this.labels, this.currency);
 
                 let x = dataIndex * this.stepX + this.padding;
 
                 this.drawLine(x, this.padding, x, y, "black");
-                this.drawBox(x, 0, 100, 50, this.data[dataIndex], this.labels[dataIndex], "white");
+                this.drawBox(x, 0, 100, 50, 
+                    `${this.data[dataIndex]} ${this.currency}`,
+                    new Date(this.labels[dataIndex]).toUTCString(), "white"
+                    );
             }
         }
     }
 
     drawBox(x, y, width, height, text, dateText, color) {
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(x - width / 2, y, width, height);
+        // this.ctx.fillStyle = color;
+        // this.ctx.fillRect(x - width / 2, y, width, height);
+
+        let metrics = this.ctx.measureText(dateText);
+
+        if(metrics.width + x >= this.canvas.width) {
+            x = this.canvas.width - metrics.width;
+        }
+
         this.ctx.fillStyle = "black";
         this.ctx.fillText(text, x, height - 30);
         this.ctx.fillText(dateText, x, height - 10);
@@ -81,12 +101,13 @@ export class Graph {
         this.ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
     }
 
-    drawClient(data, labels) {
+    drawClient(data, labels, currency) {
         // save given values
         // because on screen resize
         // we will use them to redraw entire client
         this.data = data;
         this.labels = labels;
+        this.currency = currency;
 
         // draw background
         this.fillRect({ x: 0, y: 0, w: this.canvas.width, h: this.canvas.height }, "white");
@@ -122,7 +143,7 @@ export class Graph {
 
     drawLabels(labels, startX, stepX, stepY, minY, diff, graphHeight, color = "black") {
 
-        let step = Math.round(labels.length / 6);
+        let step = Math.round(labels.length / this.labelCount);
         this.ctx.fillStyle = color;
         this.ctx.font = "12px serif";
 
@@ -144,7 +165,7 @@ export class Graph {
 
         for(let i = 0; i < 5; i++) {
 
-            this.ctx.fillText((minY + add).toFixed(2), 0, startY + 6);
+            this.ctx.fillText((minY + add).toFixed(4), 0, startY + 6);
  
             add = (i + 2) * diff / 5;
 
@@ -152,7 +173,7 @@ export class Graph {
         }
     }
 
-    drawGrid(x, y, width, height, stepX, stepY, count, color = "gray") {
+    drawGrid(x, y, width, height, stepX, stepY, count, color = "#b8c8cf") {
         
         this.ctx.beginPath();
 

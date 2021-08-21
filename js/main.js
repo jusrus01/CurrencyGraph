@@ -3,10 +3,11 @@ import { Graph } from "./graph.js";
 import { CurrencyService } from "./currencyService.js";
 
 class Input {
-    constructor(inputField, dropdown, dropdownContent) {
+    constructor(inputField, dropdown, dropdownContent, labels) {
         this.inputField = inputField;
         this.dropdown = dropdown;
         this.dropdownContent = dropdownContent;
+        this.labels = labels;
 
         this.addSelectionEventToOptions();
         this.addInputFieldFocusListener();
@@ -86,6 +87,7 @@ class Input {
 
     setInput = (value) => {
         this.inputField.value = value;
+        this.labels.forEach(label => label.innerHTML = value);
     }
 
     getInput = () => {
@@ -137,13 +139,15 @@ const inputs = {
     from: new Input(
         document.getElementById("fromInput"),
         document.querySelector(".dropdown.from"),
-        document.getElementById("fromDropdownContent")
+        document.getElementById("fromDropdownContent"),
+        document.querySelectorAll(".from-label")
         ),
 
     to: new Input(
         document.getElementById("toInput"), 
         document.querySelector(".dropdown.to"), 
-        document.getElementById("toDropdownContent")
+        document.getElementById("toDropdownContent"),
+        document.querySelectorAll(".to-label")
         )
 }
 
@@ -161,6 +165,9 @@ switchBtn.addEventListener("click", function() {
     updateGraphData(currentSelectedDate);
 });
 
+const latestValue = document.getElementById("latestValue");
+const latestDate = document.getElementById("latestDate");
+
 const currencyService = new CurrencyService();
 
 const dateButtons = document.querySelectorAll(".date-btn");
@@ -176,10 +183,19 @@ const allDates = [
     new Date(currentDate.getTime() - 3.154e+11),
 ];
 
-let currentSelectedDate = allDates[3];
+let currentSelectedDate = allDates[1];
+let currentSelectedBtn = dateButtons[1];
 
 for(let i = 0; i < allDates.length; i++) {
-    dateButtons[i].addEventListener("click", function() { 
+    dateButtons[i].addEventListener("click", function(e) {
+
+        if(currentSelectedBtn.classList.contains("selected")) {
+            currentSelectedBtn.classList.remove("selected");
+        }
+
+        currentSelectedBtn = e.target;
+        currentSelectedBtn.classList.add("selected");        
+
         updateGraphData(allDates[i]);
         currentSelectedDate = allDates[i];
     });
@@ -201,11 +217,14 @@ function updateGraphData(date) {
              let labels = [];
 
              for(const [key, value] of Object.entries(jsonCurrencyData["rates"])) {
-                 labels.push(key);
-                 currencyData.push(value[inputs.to.getInput()]);
+                labels.push(key);
+                currencyData.push(value[inputs.to.getInput()]);
              }
 
-             graph.drawClient(currencyData, labels);
+             latestValue.innerHTML = currencyData.pop();
+             latestDate.innerHTML = new Date(labels.pop()).toUTCString();
+             
+             graph.drawClient(currencyData, labels, inputs.to.getInput());
         }
     }
 }
