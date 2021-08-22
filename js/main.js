@@ -7,11 +7,13 @@ import { CurrencyService } from "./services/currencyService.js";
  * dropdown input and html label change
  */
 class Input {
-    constructor(inputField, dropdown, dropdownContent, labels) {
+    constructor(inputField, dropdown, dropdownContent, labels, updateFunction) {
         this.inputField = inputField;
         this.dropdown = dropdown;
         this.dropdownContent = dropdownContent;
         this.labels = labels;
+
+        this.updateFunction = function() { updateFunction; }
 
         this.lastInput = null;
 
@@ -23,7 +25,7 @@ class Input {
     initInputSearch() {
         let searchWord = this.inputField.value;
 
-        this.inputField.addEventListener("keydown", (e) => {
+        this.inputField.addEventListener("keyup", (e) => {
             if (e.key == "Enter") {
                 let selected = false;
 
@@ -40,15 +42,12 @@ class Input {
                     }
                 });
 
+                updateGraphData(currentSelectedDate);
+
                 this.hideDropdown();
             } else {
                 let firstHighlighted = false;
-
-                if (e.key == "Backspace" && searchWord != "") {
-                    searchWord = searchWord.slice(0, -1);
-                } else if (e.keyCode >= 65 && e.keyCode <= 122) {
-                    searchWord += e.key;
-                }
+                searchWord = this.inputField.value;
 
                 // Filter selections by search word
                 this.dropdownContent.childNodes.forEach((node) => {
@@ -102,8 +101,7 @@ class Input {
     addSelectionEventToOptions() {
         this.dropdownContent.childNodes.forEach((opt) =>
             opt.addEventListener("mousedown", () => {
-
-                if(opt.innerText != this.inputField.value) {
+                if (opt.innerText != this.inputField.value) {
                     updateGraphData(currentSelectedDate);
                 }
 
@@ -165,7 +163,7 @@ const inputs = {
         document.getElementById("fromInput"),
         document.querySelector(".dropdown.from"),
         document.getElementById("fromDropdownContent"),
-        document.querySelectorAll(".from-label")
+        document.querySelectorAll(".from-label"),
     ),
 
     to: new Input(
@@ -175,18 +173,6 @@ const inputs = {
         document.querySelectorAll(".to-label")
     ),
 };
-
-// Init default values on page load
-inputs.from.setInput("EUR");
-inputs.to.setInput("USD");
-
-switchBtn.addEventListener("click", function () {
-    const temp = inputs.from.getInput();
-    inputs.from.setInput(inputs.to.getInput());
-    inputs.to.setInput(temp);
-
-    updateGraphData(currentSelectedDate);
-});
 
 const latestValue = document.getElementById("latestValue");
 const latestDate = document.getElementById("latestDate");
@@ -223,6 +209,22 @@ for (let i = 0; i < allDates.length; i++) {
     });
 }
 
+switchBtn.addEventListener("click", function () {
+    const temp = inputs.from.getInput();
+    inputs.from.setInput(inputs.to.getInput());
+    inputs.to.setInput(temp);
+
+    updateGraphData(currentSelectedDate);
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+    // Init default values on page load
+    inputs.from.setInput("EUR");
+    inputs.to.setInput("USD");
+
+    updateGraphData(currentSelectedDate);
+});
+
 function updateGraphData(date) {
     let xhr = currencyService.getTimeseries(
         inputs.from.getInput(),
@@ -249,5 +251,3 @@ function updateGraphData(date) {
         }
     };
 }
-
-updateGraphData(currentSelectedDate);

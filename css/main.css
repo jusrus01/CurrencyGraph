@@ -79,6 +79,7 @@ p {
 
 .switch-btn:hover {
     background-color: var(--clr-gray);
+    color: white;
 }
 
 .selected {
