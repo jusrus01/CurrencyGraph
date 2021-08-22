@@ -242,11 +242,11 @@ canvas {
         padding: 0 0.2rem;
     }
 
-    .chart__label {
+    .graph__label {
         display: none;
     }
 
-    .chart__info {
+    .graph__info {
         justify-content: center;
     }
 }
